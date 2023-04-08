@@ -39,24 +39,27 @@ router.post('/addtran', async (req, res) => {
 router.get('/detailstrans/:id', async (req, res) => {
   try {
     const transactions = await Transaction.find({ user: req.params.id });
-    
-    // prepare the analysis object
-    const analysis = {};
+
+    // prepare the analysis array
+    const analysis = [];
     let totalAmount = 0;
     transactions.forEach(({ category, amount }) => {
-      if (!analysis[category]) {
-        analysis[category] = 0;
+      const index = analysis.findIndex(arr => arr[0] === category);
+      if (index === -1) {
+        analysis.push([category, amount]);
+      } else {
+        analysis[index][1] += amount;
       }
-      analysis[category] += amount;
       totalAmount += amount;
     });
-    analysis.total = totalAmount;
+    analysis.push(['Total', totalAmount]);
 
-    res.json({  analysis });
+    res.json(analysis);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 
 
