@@ -62,8 +62,13 @@ const userRegister = async (userDets, res) => {
 
     await sendEmail(newUser.email, "verify Email", message);
     // await sendMagicLinkEmail(newUser.email, "verify Email", message);
-
+    let result = {
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+    };
     return res.status(201).json({
+      ...result,
       message: `User is successfully registered. Check your mail.`,
       success: true,
     });
