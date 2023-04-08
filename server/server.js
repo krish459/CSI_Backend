@@ -47,6 +47,7 @@ app.use(fileUpload({
 app.use("/api/users", require("./routes/userRoute"));
 app.use("/api/items", require("./routes/itemRoute"));
 app.use("/api/transactions", require("./routes/transactionRoute"));
+app.use("/api/accounts", require("./routes/accountRoute"));
 
 
 /**
