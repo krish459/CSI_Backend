@@ -1,5 +1,13 @@
-const { userRegister, userLogin , userAuth, verifyEmail} = require("../utils/Auth");
+const userModel = require("../models/userModel");
+const {
+  userRegister,
+  userLogin,
+  userAuth,
+  verifyEmail,
+} = require("../utils/Auth");
 const { verifyOtp } = require("../utils/otpMobile");
+
+
 
 const router = require("express").Router();
 
@@ -22,13 +30,13 @@ const router = require("express").Router();
  *                     type: String
  *                number:
  *                     type: String
- *                isAdmin: 
+ *                isAdmin:
  *                     type: Boolean
  *                username:
  *                     type: String
  *                password:
  *                     type: String
- *                confirmed: 
+ *                confirmed:
  *                     type: Boolean
  *
  */
@@ -39,7 +47,6 @@ const router = require("express").Router();
  *    name: Users
  *    description: The User managing API
  */
-
 
 /**
  * @swagger
@@ -72,7 +79,6 @@ const router = require("express").Router();
 router.post("/register", async (req, res) => {
   await userRegister(req.body, res);
 });
-
 
 /**
  * @swagger
@@ -153,11 +159,9 @@ router.post("/login", async (req, res) => {
  *         description: An internal server error occurred
  */
 
-
-
-router.get("/verify/:id/:token",async(req,res)=>{
- await verifyEmail(req,res)
-})
+router.get("/verify/:id/:token", async (req, res) => {
+  await verifyEmail(req, res);
+});
 
 /**
  * @swagger
@@ -177,7 +181,7 @@ router.get("/verify/:id/:token",async(req,res)=>{
  * @swagger
  * /api/users/verify/otp:
  *   post:
- *     summary: Verify User Number 
+ *     summary: Verify User Number
  *     tags: [Verifications]
  *     requestBody:
  *       required: true
@@ -194,8 +198,17 @@ router.get("/verify/:id/:token",async(req,res)=>{
  *         description: An internal server error occurred
  */
 
-router.post('/verify/otp',async(req,res)=>{
-  await verifyOtp(req.body.otp,req.body.number,req,res)
- })
+router.post("/verify/otp", async (req, res) => {
+  await verifyOtp(req.body.otp, req.body.number, req, res);
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ message: "User not found" });
+  }
+});
 
 module.exports = router;
