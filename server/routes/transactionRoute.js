@@ -41,18 +41,18 @@ router.get('/detailstrans/:id', async (req, res) => {
     const transactions = await Transaction.find({ user: req.params.id });
 
     // prepare the analysis array
-    const analysis = [];
+    const analysis = [[]];
     let totalAmount = 0;
     transactions.forEach(({ category, amount }) => {
       const index = analysis.findIndex(arr => arr[0] === category);
       if (index === -1) {
-        analysis.push([category, amount]);
+        analysis[0].push([category, amount]);
       } else {
         analysis[index][1] += amount;
       }
       totalAmount += amount;
     });
-    analysis.push(['Total', totalAmount]);
+    analysis[0].push(['Total', totalAmount]);
 
     res.json(analysis);
   } catch (error) {
