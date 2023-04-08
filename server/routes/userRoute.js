@@ -211,4 +211,24 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// router.put('/users/:id', async (req, res) => {
+//   try {
+//     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//     res.json(user);
+//   } catch (error) {
+//     res.status(404).json({ message: 'User not found' });
+//   }
+// });
+
+// router.delete('/users/:id', async (req, res) => {
+//   try {
+//     await User.findByIdAndDelete(req.params.id);
+//     res.json({ message: 'User deleted successfully' });
+//   } catch (error) {
+//     res.status(404).json({ message: 'User not found' });
+//   }
+// });
+
+
+
 module.exports = router;
