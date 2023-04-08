@@ -53,7 +53,7 @@ router.put("/specificpps/:id", async (req, res) => {
 
 // Create a new planned payment
 router.post("/addpps", async (req, res) => {
-  const { title, finalGoal, timePeriod, userId } = req.body;
+  const { title, finalGoal, timePeriod, userId,monthlyInvestment,pOrG } = req.body;
 
   try {
     const newPlannedPayment = new PlannedPayment({
@@ -61,6 +61,8 @@ router.post("/addpps", async (req, res) => {
       finalGoal,
       timePeriod,
       userId,
+      monthlyInvestment,
+      pOrG
     });
 
     const plannedPayment = await newPlannedPayment.save();

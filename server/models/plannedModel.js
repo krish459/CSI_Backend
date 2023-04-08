@@ -13,10 +13,15 @@ const PlannedPaymentSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  pOrG: {
+    type: Boolean,
+    default: false
+  },
   startDate: {
     type: Date,
     default: Date.now()
   },
+  
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -66,6 +66,7 @@ const userRegister = async (userDets, res) => {
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
+      otp: OTP
     };
     return res.status(201).json({
       ...result,
