@@ -24,8 +24,9 @@ router.post('/addtran', async (req, res) => {
     await transaction.save();
 
     // Fetch the account corresponding to the user
+    console.log("!user : ",user );
     const account = await Account.findOne({ userId: user });
-
+    console.log("!!: ",account );
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
@@ -34,7 +35,7 @@ router.post('/addtran', async (req, res) => {
     if (category === "credit") {
       account.amount += amount;
     } else {
-      account.amount += amount;
+      account.amount -= amount;
     }
 
     // Save the updated account
