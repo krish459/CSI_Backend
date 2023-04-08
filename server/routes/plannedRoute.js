@@ -6,7 +6,7 @@ const Account = require("../models/accountModel");
 // Get all planned payments
 router.get("/getpps/:id", async (req, res) => {
   try {
-    const plannedPayments = await PlannedPayment.find({ userId: req.user.id });
+    const plannedPayments = await PlannedPayment.find({ userId: req.params.id });
     res.json(plannedPayments);
   } catch (err) {
     console.error(err);
@@ -25,15 +25,20 @@ router.put("/specificpps/:id", async (req, res) => {
     plannedPayment.amountPaid += plannedPayment.monthlyInvestment;
     await plannedPayment.save();
 
-    const account = await Account.findOne({ userId: plannedPayment.userId.valueOf() });
+    const account = await Account.findOne({
+      userId: plannedPayment.userId.valueOf(),
+    });
     console.log("!!: ", plannedPayment.userId.valueOf());
     if (!account) {
       return res.status(404).json({ message: "Account not found" });
     }
 
     // Update the account balance based on the transaction type
-    console.log('PlannedPayment.monthlyPayment:', plannedPayment.monthlyInvestment);
-    
+    console.log(
+      "PlannedPayment.monthlyPayment:",
+      plannedPayment.monthlyInvestment
+    );
+
     account.amount -= plannedPayment.monthlyInvestment;
 
     // Save the updated account
@@ -102,7 +107,6 @@ router.delete("/deletepps/:id", async (req, res) => {
     if (!plannedPayment) {
       return res.status(404).json({ msg: "Planned payment not found" });
     }
-
 
     await plannedPayment.remove();
 
