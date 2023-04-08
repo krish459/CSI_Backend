@@ -1,18 +1,51 @@
 const express = require('express');
 const router = express.Router();
 const Transaction = require('../models/transactionModel');
+const Account = require("../models/accountModel");
 
 // CREATE route
+// router.post('/addtran', async (req, res) => {
+//   try {
+//     const { user, amount, category} = req.body;
+//     const transaction = new Transaction({ user, amount, category });
+//     await transaction.save();
+//     res.status(201).json(transaction);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
 router.post('/addtran', async (req, res) => {
   try {
-    const { user, amount, category} = req.body;
+    const { user, amount, category } = req.body;
+    
+    // Save the transaction
     const transaction = new Transaction({ user, amount, category });
     await transaction.save();
+
+    // Fetch the account corresponding to the user
+    const account = await Account.findOne({ userId: user });
+
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+
+    // Update the account balance based on the transaction type
+    if (category === "credit") {
+      account.amount += amount;
+    } else {
+      account.amount += amount;
+    }
+
+    // Save the updated account
+    await account.save();
+
     res.status(201).json(transaction);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // READ route
 router.get('/gettran/:id', async (req, res) => {

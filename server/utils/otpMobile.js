@@ -12,7 +12,12 @@ const sendOtp = async (OTP, number) => {
     const accountSid = ACCOUNT_SID;
     const authToken = AUTH_TOKEN;
     const client = require("twilio")(accountSid, authToken);
+    const otp = new Otp({ number: number, otp: OTP });
 
+    const salt = await bcrypt.genSalt(10);
+    otp.otp = await bcrypt.hash(otp.otp, salt);
+    const resultOtp = await otp.save();
+    
     const message = await client.messages.create({
       body: `Your OTP is ${OTP}`,
       from: PHONE_NUMBER,
@@ -23,11 +28,6 @@ const sendOtp = async (OTP, number) => {
 
 
 
-    const otp = new Otp({ number: number, otp: OTP });
-
-    const salt = await bcrypt.genSalt(10);
-    otp.otp = await bcrypt.hash(otp.otp, salt);
-    const resultOtp = await otp.save();
     console.log("Otp sent successfully");
   } catch (error) {
     console.log(`OTP not sent ${error}`);

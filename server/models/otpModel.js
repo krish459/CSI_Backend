@@ -10,7 +10,7 @@ const OtpSchema = new Schema(
       type: String,
       required: true,
     },
-    createdAt:{type: Date, default: Date.now, index:{expires: 300}}
+    createdAt:{type: Date, default: Date.now, index:{expires: 300000}}
   },
   { timestamps: true }
 );
