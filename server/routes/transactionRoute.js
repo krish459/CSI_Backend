@@ -3,17 +3,6 @@ const router = express.Router();
 const Transaction = require('../models/transactionModel');
 const Account = require("../models/accountModel");
 
-// CREATE route
-// router.post('/addtran', async (req, res) => {
-//   try {
-//     const { user, amount, category} = req.body;
-//     const transaction = new Transaction({ user, amount, category });
-//     await transaction.save();
-//     res.status(201).json(transaction);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
 
 router.post('/addtran', async (req, res) => {
   try {
@@ -46,6 +35,29 @@ router.post('/addtran', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.get('/detailstrans/:id', async (req, res) => {
+  try {
+    const transactions = await Transaction.find({ user: req.params.id });
+    
+    // prepare the analysis object
+    const analysis = {};
+    let totalAmount = 0;
+    transactions.forEach(({ category, amount }) => {
+      if (!analysis[category]) {
+        analysis[category] = 0;
+      }
+      analysis[category] += amount;
+      totalAmount += amount;
+    });
+    analysis.total = totalAmount;
+
+    res.json({  analysis });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 
 // READ route
