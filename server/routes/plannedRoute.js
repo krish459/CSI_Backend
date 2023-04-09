@@ -6,13 +6,23 @@ const Account = require("../models/accountModel");
 // Get all planned payments
 router.get("/getpps/:id", async (req, res) => {
   try {
-    const plannedPayments = await PlannedPayment.find({ userId: req.params.id });
+    const plannedPayments = await PlannedPayment.find({ userId: req.params.id, pOrG: false });
     res.json(plannedPayments);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
   }
 });
+
+router.get("/getgoals/:id", async (req, res) => {
+    try {
+      const plannedPayments = await PlannedPayment.find({ userId: req.params.id, pOrG: true });
+      res.json(plannedPayments);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server Error");
+    }
+  });
 
 // Get a specific planned payment
 router.put("/specificpps/:id", async (req, res) => {
