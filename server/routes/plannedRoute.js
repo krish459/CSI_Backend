@@ -6,7 +6,10 @@ const Account = require("../models/accountModel");
 // Get all planned payments
 router.get("/getpps/:id", async (req, res) => {
   try {
-    const plannedPayments = await PlannedPayment.find({ userId: req.params.id, pOrG: false });
+    const plannedPayments = await PlannedPayment.find({
+      userId: req.params.id,
+      pOrG: false,
+    });
     res.json(plannedPayments);
   } catch (err) {
     console.error(err);
@@ -15,14 +18,17 @@ router.get("/getpps/:id", async (req, res) => {
 });
 
 router.get("/getgoals/:id", async (req, res) => {
-    try {
-      const plannedPayments = await PlannedPayment.find({ userId: req.params.id, pOrG: true });
-      res.json(plannedPayments);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server Error");
-    }
-  });
+  try {
+    const plannedPayments = await PlannedPayment.find({
+      userId: req.params.id,
+      pOrG: true,
+    });
+    res.json(plannedPayments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
 
 // Get a specific planned payment
 router.put("/specificpps/:id", async (req, res) => {
@@ -44,10 +50,6 @@ router.put("/specificpps/:id", async (req, res) => {
     }
 
     // Update the account balance based on the transaction type
-    console.log(
-      "PlannedPayment.monthlyPayment:",
-      plannedPayment.monthlyInvestment
-    );
 
     account.amount -= plannedPayment.monthlyInvestment;
 
@@ -61,9 +63,50 @@ router.put("/specificpps/:id", async (req, res) => {
   }
 });
 
+router.put("/specificgoals/:id", async (req, res) => {
+  try {
+    const { monthlyInvestment } = req.body;
+    if (isNaN(monthlyInvestment) || monthlyInvestment === undefined) {
+      return res
+        .status(400)
+        .json({ message: "Invalid monthly investment value" });
+    }
+
+    const plannedPayment = await PlannedPayment.findById(req.params.id);
+    if (!plannedPayment) {
+      return res.status(404).json({ msg: "Planned payment not found" });
+    }
+
+    plannedPayment.amountPaid += Number(monthlyInvestment); // convert monthlyInvestment to a number before adding
+    plannedPayment.monthlyInvestment = Number(monthlyInvestment); // convert monthlyInvestment to a number before updating
+    await plannedPayment.save();
+
+    const account = await Account.findOne({
+      userId: plannedPayment.userId.valueOf(),
+    });
+    console.log("!!: ", plannedPayment.userId.valueOf());
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+
+    // Update the account balance based on the transaction type
+
+    account.amount -= monthlyInvestment;
+
+    // Save the updated account
+    await account.save();
+
+    res.json(plannedPayment);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
+
 // Create a new planned payment
 router.post("/addpps", async (req, res) => {
-  const { title, finalGoal, timePeriod, userId,monthlyInvestment,pOrG } = req.body;
+  const { title, finalGoal, timePeriod, userId, monthlyInvestment, pOrG } =
+    req.body;
 
   try {
     const newPlannedPayment = new PlannedPayment({
@@ -72,7 +115,7 @@ router.post("/addpps", async (req, res) => {
       timePeriod,
       userId,
       monthlyInvestment,
-      pOrG
+      pOrG,
     });
 
     const plannedPayment = await newPlannedPayment.save();
